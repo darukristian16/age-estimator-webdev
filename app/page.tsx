@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 export default function Home() {
   const router = useRouter()
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-72 mx-auto">
+    <section className="flex flex-col items-center justify-center gap-4 h-screen mx-auto">
       <div className="inline-block max-w-2xl text-center justify-center">
         <h1 className={title()}>
           Welcome to&nbsp;
