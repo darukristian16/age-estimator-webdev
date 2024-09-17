@@ -28,14 +28,22 @@ export const useAgeEstimator = () => {
   const webcamRef = useRef<Webcam>(null);
   const [image, setImage] = useState<string | null>(null);
   const [age, setAge] = useState<number | null>(null);
+  const [isCaptured, setIsCaptured] = useState(false);
 
   // Capture image from the webcam
   const capture = () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       setImage(imageSrc);
+      setIsCaptured(true);
     }
   };
+
+  const retryCapture = () => {
+    setImage(null);
+    setAge(null);
+    setIsCaptured(false);
+  }
 
   // Predict age by sending the image to the API
   const predictAge = async () => {
@@ -70,7 +78,9 @@ export const useAgeEstimator = () => {
     webcamRef,
     image,
     age,
+    isCaptured,
     capture,
+    retryCapture,
     predictAge,
   };
 };
