@@ -29,6 +29,7 @@ export const useAgeEstimator = () => {
   const [image, setImage] = useState<string | null>(null);
   const [age, setAge] = useState<number | null>(null);
   const [isCaptured, setIsCaptured] = useState(false);
+  const [isAgeEstimated, setIsAgeEstimated] = useState(false);
 
   // Capture image from the webcam
   const capture = () => {
@@ -36,6 +37,7 @@ export const useAgeEstimator = () => {
       const imageSrc = webcamRef.current.getScreenshot();
       setImage(imageSrc);
       setIsCaptured(true);
+      setIsAgeEstimated(false);
     }
   };
 
@@ -43,6 +45,7 @@ export const useAgeEstimator = () => {
     setImage(null);
     setAge(null);
     setIsCaptured(false);
+    setIsAgeEstimated(false);
   }
 
   // Predict age by sending the image to the API
@@ -69,6 +72,7 @@ export const useAgeEstimator = () => {
 
       const predictedAge = response.data.data[0]?.age; // Extract age from response
       setAge(predictedAge); // Set age state
+      setIsAgeEstimated(true);
     } catch (error) {
       console.error("Error estimating age", error);
     }
@@ -79,6 +83,7 @@ export const useAgeEstimator = () => {
     image,
     age,
     isCaptured,
+    isAgeEstimated,
     capture,
     retryCapture,
     predictAge,

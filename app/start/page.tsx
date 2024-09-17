@@ -6,13 +6,7 @@ import {useAgeEstimator, videoConstraints} from "@/components/camera"
 import {subtitle} from "@/components/primitives"
 
 export default function App() {
-  const { webcamRef, image, age, isCaptured, capture, retryCapture, predictAge } = useAgeEstimator();
-  const [isAgeEstimated, setIsAgeEstimated] = useState(false);
-
-  const handlePredictAge = () => {
-    predictAge();
-    setIsAgeEstimated(true);
-  };
+  const { webcamRef, image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge } = useAgeEstimator();
 
   return (
     <>
@@ -42,7 +36,7 @@ export default function App() {
           className="max-w-[720px] flex"
           isFooterBlurred  
         >
-          <img src={image} alt="Captured" className="" />
+          <img src={image ?? undefined} alt="Captured" className="" />
           <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
             <p className="text-white">Estimated Age: {age}</p>
             {!isAgeEstimated ? (
