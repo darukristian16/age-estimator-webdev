@@ -1,36 +1,42 @@
 'use client'
 import React from "react";
-import Webcam from "react-webcam";
-import {Card, CardFooter, Button} from "@nextui-org/react";
-import {useAgeEstimator, videoConstraints} from "@/components/camera"
+import {Card, CardFooter, Button, Spinner} from "@nextui-org/react";
+import {useAgeEstimator} from "@/components/camera"
 import Image from "next/image";
 
 export default function App() {
-  const { webcamRef, image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage } = useAgeEstimator();
+  const { webcamRef, image, age, isCaptured, isAgeEstimated, isLoading, capture, predictAge, CameraWithWatermark } = useAgeEstimator();
 
   return (
     <>
       <div className="flex flex-auto flex-row h-[calc(100vh-150px)] flex-wrap gap-4 items-center justify-center">
         <div className="relative">
           {isCaptured && (
-            <div className="absolute top-4 right-4 z-20">
+            <div className="absolute top-2 right-2 z-20">
               <Button
                 isIconOnly
-                className="bg-green-500 hover:bg-green-600 shadow-lg"
-                onClick={downloadImage}
+                className="bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700"
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = image;
+                  link.download = 'age-estimation.jpg';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
                 variant="flat"
                 color="default"
-                radius="lg"
-                size="lg"
+                radius="full"
+                size="sm"
                 aria-label="Download image"
-                >
-                  <Image
-                    src="/icons/download.png"
-                    alt="Download"
-                    width={20}
-                    height={20}
-                    className="invert"
-                  />
+              >
+                <Image
+                  src="/icons/download.png"
+                  alt="Download"
+                  width={20}
+                  height={20}
+                  className="invert"
+                />
               </Button>
             </div>
           )}
@@ -38,15 +44,17 @@ export default function App() {
             <Card className='flex w-[calc(100vh*9/16)] max-w-[720px] bg-cover'>
               <CameraWithWatermark/>
               <CardFooter className="justify-between border-black/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
-              <Button 
-                className="text-small text-white bg-red-600 font-semibold font-helvetica"
-                onClick={capture} 
-                variant="flat" 
-                color="default" 
-                radius="lg" 
-                size="lg">
-                Capture
-              </Button>
+                <Button 
+                  className="text-small text-white bg-red-600 font-semibold font-helvetica"
+                  onClick={capture} 
+                  variant="flat" 
+                  color="default" 
+                  radius="lg" 
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? <Spinner size="sm" /> : "Capture"}
+                </Button>
               </CardFooter>
             </Card>
           ) : (
@@ -67,18 +75,25 @@ export default function App() {
                     variant="flat" 
                     color="default" 
                     radius="lg" 
-                    size="lg">
-                      Estimate Age
+                    size="lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? <Spinner size="sm" /> : "Estimate Age"}
                   </Button>
                 ) : (
                   <Button
                     className="text-small text-white bg-secondary font-semibold font-helvetica"
-                    onClick={retryCapture}
+                    onClick={() => {
+                      webcamRef.current?.video?.play();
+                      setIsCaptured(false);
+                      setIsAgeEstimated(false);
+                    }}
                     variant="flat"
                     color="default"
                     radius="lg"
-                    size="lg">
-                      Retry
+                    size="lg"
+                  >
+                    Retry
                   </Button>
                 )}
               </CardFooter>
