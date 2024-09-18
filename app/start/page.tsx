@@ -1,15 +1,23 @@
 'use client'
 import React from "react";
+<<<<<<< Updated upstream
 import {Card, CardFooter, Button, Spinner} from "@nextui-org/react";
+=======
+import {Card, CardFooter, Button} from "@nextui-org/react";
+>>>>>>> Stashed changes
 import {useAgeEstimator} from "@/components/camera"
 import Image from "next/image";
 
 export default function App() {
+<<<<<<< Updated upstream
   const { webcamRef, image, age, isCaptured, isAgeEstimated, isLoading, capture, predictAge, CameraWithWatermark } = useAgeEstimator();
+=======
+  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage } = useAgeEstimator();
+>>>>>>> Stashed changes
 
   return (
     <>
-      <div className="flex flex-auto flex-row h-[calc(100vh-150px)] flex-wrap gap-4 items-center justify-center">
+      <div className="flex flex-auto flex-row max-h-[calc(100vh*9/16)] flex-wrap gap-4 items-center justify-center">
         <div className="relative">
           {isCaptured && (
             <div className="absolute top-2 right-2 z-20">

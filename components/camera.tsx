@@ -8,6 +8,7 @@ export const videoConstraints = {
   width: 720,
   height: 1280,
   facingMode: "user",
+  aspectRatio: 9 / 16,
 };
 
 // Function to convert base64 image to Blob

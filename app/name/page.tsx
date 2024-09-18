@@ -10,10 +10,10 @@ export default function App() {
   const variants = ["bordered"];
   const router = useRouter();
   return (
-    <div className="flex flex-col w-full max-w-full h-[calc(100vh-150px)] items-center justify-center py-80 gap-4 mx-auto">
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col max-w-full h-[calc(50vh)] max-h-full items-center justify-center py-80 gap-4 mx-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
             {variants.map((variant) => (
-                <div key={variant} className="w-72">
+                <div key={variant} className="w-72 sm:w-64 xs:w-56">
                     <Input 
                         type="name" 
                         variant="bordered" 
@@ -22,7 +22,7 @@ export default function App() {
                     />
                 </div>
                 ))}
-                <div>
+                <div className="mt-4 sm:mt-0">
                     <Button 
                         as={Link}
                         href='#'
