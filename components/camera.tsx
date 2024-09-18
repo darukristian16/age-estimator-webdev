@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Image from "next/image";
-import { s } from "framer-motion/client";
 
 export const videoConstraints = {
   width: 720,
