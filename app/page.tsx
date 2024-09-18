@@ -25,7 +25,8 @@ export default function Home() {
           radius="full"
           color="primary"
           variant="shadow" 
-          onClick={() => router.replace('/?page=name')} 
+          onClick={() => router.replace('/?page=name')}
+          className="font-helvetica font-semibold" 
         >
             Get Started
         </Button>

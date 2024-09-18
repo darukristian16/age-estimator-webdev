@@ -13,7 +13,11 @@ const config: Config = {
       colors: {
         background: "FFFFFF",
         foreground: "#11181C",
-        primary:"#DF040A"
+        primary:"#DF040A",
+        secondary:"#0549CF",
+      },
+      fontFamily: {
+        'helvetica': ['Helvetica', 'Arial', 'sans-serif']
       },
     },
   },

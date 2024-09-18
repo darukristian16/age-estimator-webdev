@@ -30,7 +30,8 @@ export default function App() {
                         radius="full" 
                         color="primary"
                         variant="shadow"
-                        onClick={() => router.replace('/?page=start')} 
+                        onClick={() => router.replace('/?page=start')}
+                        className="font-helvetica font-semibold" 
                     >
                         Proceed
                     </Button>

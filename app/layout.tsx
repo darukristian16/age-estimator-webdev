@@ -9,12 +9,14 @@ import Loading from "./loading";
 export const metadata: Metadata = {
   title: "Age Estimator",
   description: "Age Estimator by Telkom Indonesia",
+  icons: {
+    icon: '/image/logo-small.png',
+  }
 };
 
 export default function RootLayout({children,}: { children: React.ReactNode }) {
   return (
     <html lang="en" className='light'>
-      <head/>
       <body>
         <Providers>
           <div className="flex flex-col min-h-screen">

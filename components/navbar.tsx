@@ -16,7 +16,7 @@ export const Navbar = () => {
       <NavbarContent>
         <NavbarBrand>
           <Image 
-            className="h-14 flex justify-start items-center gap-1"
+            className="h-10 flex justify-start items-center gap-1"
             src="/image/logo.png"
             alt="Logo Telkom Indonesia"
           />
@@ -25,17 +25,17 @@ export const Navbar = () => {
 
       <NavbarContent className="hidden sm:flex gap-4" justify="end">
         <NavbarItem isActive>
-          <Link href="/" aria-current="page">
+          <Link className='font-bold' color="primary" href="/" aria-current="page">
             Home
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="#">
+          <Link color="foreground" href="#" className="hover:text-primary hover:font-medium">
             How it Works
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="#">
+          <Link color="foreground" href="#" className="hover:text-primary hover:font-medium">
             About
           </Link>
         </NavbarItem>

@@ -3,8 +3,8 @@ import Webcam from "react-webcam";
 import axios from "axios";
 
 export const videoConstraints = {
-  width: 1280,
-  height: 720,
+  width: 720,
+  height: 1280,
   facingMode: "user",
 };
 
