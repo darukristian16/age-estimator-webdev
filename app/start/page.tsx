@@ -1,17 +1,16 @@
 'use client'
 import React from "react";
-import Webcam from "react-webcam";
 import {Card, CardFooter, Button} from "@nextui-org/react";
-import {useAgeEstimator, videoConstraints} from "@/components/camera"
+import {useAgeEstimator} from "@/components/camera"
 import Image from "next/image";
 
 export default function App() {
-  const { webcamRef, image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage } = useAgeEstimator();
+  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage } = useAgeEstimator();
 
   return (
     <>
-      <div className="flex flex-auto flex-row h-[calc(100vh-150px)] flex-wrap gap-4 items-center justify-center">
-        <div className="relative">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] p-4">
+        <div className="relative w-full max-w-[50vh] aspect-[3/4]">
           {isCaptured && (
             <div className="absolute top-4 right-4 z-20">
               <Button
@@ -23,6 +22,7 @@ export default function App() {
                 radius="lg"
                 size="lg"
                 aria-label="Download image"
+                isDisabled={!isAgeEstimated}
                 >
                   <Image
                     src="/icons/download.png"
@@ -35,7 +35,7 @@ export default function App() {
             </div>
           )}
           {!isCaptured ? (
-            <Card className='flex w-[calc(100vh*9/16)] max-w-[720px] bg-cover'>
+            <Card className='absolute top-0 left-0 w-full h-full bg-cover'>
               <CameraWithWatermark/>
               <CardFooter className="justify-between border-black/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
               <Button 
@@ -51,13 +51,13 @@ export default function App() {
             </Card>
           ) : (
             <Card 
-              className="flex w-[calc(100vh*9/16)] max-w-[720px] bg-cover"
+              className="absolute top-0 left-0 w-full h-full bg-cover"
               isFooterBlurred
               classNames={{
                 footer: "bg-black/60 backdrop-blur-md backdrop-saturate-150"
               }}  
             >
-              <img src={image ?? undefined} alt="Captured" className="w-full h-full object-contain" />
+              <img src={image ?? undefined} alt="Captured" className="w-full h-full object-cover" />
               <CardFooter className="justify-between border-black/20 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] max-h-20 shadow-small ml-1 z-10">
                 <p className="text-white font-arial font-bold">Umur Anda: {age}</p>
                 {!isAgeEstimated ? (
