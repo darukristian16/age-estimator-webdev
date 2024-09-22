@@ -1,7 +1,6 @@
 'use client'
-import React from "react";
+import React, { useState } from "react";
 import {Input} from "@nextui-org/react";
-import {Link} from "@nextui-org/react";
 import {Button} from "@nextui-org/button";
 import { useRouter } from 'next/navigation'
 import { Accordion, AccordionItem } from "@nextui-org/react";
@@ -9,6 +8,12 @@ import { Accordion, AccordionItem } from "@nextui-org/react";
 export default function App() {
   const variants = ["bordered"];
   const router = useRouter();
+  const [ name, setName ] = useState("");
+
+  const handleProceed = () => {
+    router.push(`/start?name=${encodeURIComponent(name)}`);
+  };
+
   return (
     <div className="flex flex-col max-w-full h-[calc(50vh)] max-h-full items-center justify-center py-80 gap-4 mx-auto">
         <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -19,18 +24,18 @@ export default function App() {
                         variant="bordered" 
                         label="Name"
                         placeholder="Enter your name" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                     />
                 </div>
                 ))}
                 <div className="mt-4 sm:mt-0">
                     <Button 
-                        as={Link}
-                        href='#'
                         size="lg"
                         radius="full" 
                         color="primary"
                         variant="shadow"
-                        onClick={() => router.replace('/?page=start')}
+                        onClick={handleProceed}
                         className="font-helvetica font-semibold" 
                     >
                         Proceed

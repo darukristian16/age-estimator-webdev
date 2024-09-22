@@ -102,9 +102,10 @@ export const useAgeEstimator = () => {
     }
   }, [webcamRef]);
 
-  const downloadImage = useCallback(() => {
+  const downloadImage = useCallback((name: string) => {
   if (image && age !== null) {
     const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
     const img = new window.Image();
     img.onload = () => {
       canvas.width = img.width;
@@ -135,7 +136,7 @@ export const useAgeEstimator = () => {
         // Create download link
         const link = document.createElement('a');
         link.href = canvas.toDataURL('image/jpeg');
-        link.download = 'age-estimation.jpg';
+        link.download = `age-estimation-${name}.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

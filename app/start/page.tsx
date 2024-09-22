@@ -1,11 +1,25 @@
 'use client'
-import React from "react";
+import React , { useEffect, useState } from "react";
 import {Card, CardFooter, Button} from "@nextui-org/react";
 import {useAgeEstimator} from "@/components/camera"
 import Image from "next/image";
+import { useSearchParams } from 'next/navigation';
 
 export default function App() {
   const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage } = useAgeEstimator();
+  const searchParams = useSearchParams();
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const nameParam = searchParams.get('name');
+    if (nameParam) {
+      setName(decodeURIComponent(nameParam));
+    }
+  }, [searchParams]);
+
+  const handleDownload = () => {
+    downloadImage(name);
+  };
 
   return (
     <>
@@ -16,7 +30,7 @@ export default function App() {
               <Button
                 isIconOnly
                 className="bg-green-500 hover:bg-green-600 shadow-lg"
-                onClick={downloadImage}
+                onClick={handleDownload}
                 variant="flat"
                 color="default"
                 radius="lg"
