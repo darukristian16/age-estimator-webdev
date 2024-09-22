@@ -2,11 +2,11 @@ import { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Image from "next/image";
-import { s } from "framer-motion/client";
 
 export const videoConstraints = {
-  width: 720,
-  height: 1280,
+  width: { ideal: 1050 },
+  height: { ideal:1400 },
+  aspectRatio: 3/4,
   facingMode: "user",
   aspectRatio: 9 / 16,
 };
@@ -36,38 +36,62 @@ export const useAgeEstimator = () => {
 
   // Capture image from the webcam
   const CameraWithWatermark = () => (
-    <div className="relative">
-      <Webcam
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints}
-      />
-      <div className="absolute top-4 left-4 opacity-80">
-        <Image
-          src="/image/logo.png"
-          alt="Watermark"
-          width={200}
-          height={100}
-        />
+    <div className="relative w-full h-full pb-[133.33%]">
+  <   div className="absolute top-0 left-0 w-full h-full">
+          <Webcam
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            videoConstraints={videoConstraints}
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            onUserMediaError={(err) => console.error('Webcam error:', err)}
+          />
+          <div className="absolute top-4 left-4 opacity-80">
+            <Image
+              src="/image/logo.png"
+              alt="Watermark"
+              width={200}
+              height={100}
+            />
+          </div>
       </div>
-    </div>
+    </div> 
   )
 
   const capture = useCallback(() => {
     if (webcamRef.current && webcamRef.current.video) {
+      const video = webcamRef.current.video;
+      const aspectRatio = 3 / 4;
+      
+      let targetWidth, targetHeight;
+      if (video.videoWidth / video.videoHeight > aspectRatio) {
+        targetHeight = video.videoHeight;
+        targetWidth = targetHeight * aspectRatio;
+      } else {
+        targetWidth = video.videoWidth;
+        targetHeight = targetWidth / aspectRatio;
+      }
+
       const canvas = document.createElement('canvas');
-      canvas.width = webcamRef.current.video.videoWidth;
-      canvas.height = webcamRef.current.video.videoHeight;
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
       const ctx = canvas.getContext('2d');
-  
+
       if (ctx) {
-        ctx.drawImage(webcamRef.current.video, 0, 0, canvas.width, canvas.height);
-  
+        // Draw the video frame
+        const sx = (video.videoWidth - targetWidth) / 2;
+        const sy = (video.videoHeight - targetHeight) / 2;
+        ctx.drawImage(video, sx, sy, targetWidth, targetHeight, 0, 0, targetWidth, targetHeight);
+
+        // Draw the watermark
         const watermark = new window.Image();
         watermark.onload = () => {
-          const watermarkWidth = 300;
-          const watermarkHeight = 100;
-          ctx.drawImage(watermark, 30, 30, watermarkWidth, watermarkHeight);
+          const watermarkWidth = targetWidth * 0.4;
+          const watermarkHeight = (watermarkWidth / 3) * 1;
+
+          const xPosition = targetWidth * 0.02;
+          const yPosition = targetHeight * 0.02;
+
+          ctx.drawImage(watermark, xPosition, yPosition, watermarkWidth, watermarkHeight);
           
           const imageSrc = canvas.toDataURL('image/jpeg');
           setImage(imageSrc);
@@ -79,17 +103,48 @@ export const useAgeEstimator = () => {
     }
   }, [webcamRef]);
 
-  const downloadImage = () => {
-    if (image) {
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = 'age-estimation.jpg';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
+  const downloadImage = useCallback(() => {
+  if (image && age !== null) {
+    const canvas = document.createElement('canvas');
+    const img = new window.Image();
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        
+        // Add age text to the image
+        ctx.font = 'bold 30px Arial';
+        const text = `Umur Anda: ${age}`;
+        const textMetrics = ctx.measureText(text);
+        const textWidth = textMetrics.width;
+        const textHeight = 30; // Approximate height of the text
 
+        const x = canvas.width / 2;
+        const y = canvas.height - 20;
+        
+        // Add a semi-transparent background that fits the text
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(x - textWidth / 2 - 10, y - textHeight - 10, textWidth + 20, textHeight + 20);
+        
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(text, x, y);
+
+        // Create download link
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/jpeg');
+        link.download = 'age-estimation.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    };
+    img.src = image;
+  }
+}, [image, age]);
 
   const retryCapture = () => {
     setImage(null);

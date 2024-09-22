@@ -1,7 +1,7 @@
 'use client'
 import {Link} from "@nextui-org/react";
-import {Button, ButtonGroup} from "@nextui-org/button";
-import { title, subtitle } from "@/components/primitives";
+import {Button} from "@nextui-org/button";
+import { title } from "@/components/primitives";
 import { useRouter } from 'next/navigation'
 
 

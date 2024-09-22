@@ -4,7 +4,7 @@ import {Navbar as NextUINavbar, NavbarBrand, NavbarContent, NavbarItem, Link, Na
 import {Image} from "@nextui-org/react"
 
 export const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen] = React.useState(false);
   const menuItems = [
     "Home",
     "How it Works",
@@ -55,7 +55,7 @@ export const Navbar = () => {
                 index === 0 ? "primary" : "foreground"
               }
               className="w-full"
-              href="#"
+            href={item === "Home" ? "/" : "#"}
               size="lg"
             >
               {item}
