@@ -10,7 +10,7 @@ export default function App() {
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] p-4">
-        <div className="relative w-full max-w-[50vh] aspect-[3/4]">
+        <div className="relative w-full max-w-[50vh] aspect-[9/16]">
           {isCaptured && (
             <div className="absolute top-4 right-4 z-20">
               <Button

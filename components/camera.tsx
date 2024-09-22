@@ -4,11 +4,10 @@ import axios from "axios";
 import Image from "next/image";
 
 export const videoConstraints = {
-  width: { ideal: 1050 },
-  height: { ideal:1400 },
-  aspectRatio: 3/4,
+  width: { ideal: 900 },
+  height: { ideal:1600 },
+  aspectRatio: 9/16,
   facingMode: "user",
-  aspectRatio: 9 / 16,
 };
 
 // Function to convert base64 image to Blob
@@ -36,7 +35,7 @@ export const useAgeEstimator = () => {
 
   // Capture image from the webcam
   const CameraWithWatermark = () => (
-    <div className="relative w-full h-full pb-[133.33%]">
+    <div className="relative w-full h-full pb-[177.78%]">
   <   div className="absolute top-0 left-0 w-full h-full">
           <Webcam
             ref={webcamRef}
@@ -60,7 +59,7 @@ export const useAgeEstimator = () => {
   const capture = useCallback(() => {
     if (webcamRef.current && webcamRef.current.video) {
       const video = webcamRef.current.video;
-      const aspectRatio = 3 / 4;
+      const aspectRatio = 9 / 16;
       
       let targetWidth, targetHeight;
       if (video.videoWidth / video.videoHeight > aspectRatio) {
@@ -85,10 +84,10 @@ export const useAgeEstimator = () => {
         // Draw the watermark
         const watermark = new window.Image();
         watermark.onload = () => {
-          const watermarkWidth = targetWidth * 0.4;
+          const watermarkWidth = targetWidth * 0.45;
           const watermarkHeight = (watermarkWidth / 3) * 1;
 
-          const xPosition = targetWidth * 0.02;
+          const xPosition = targetWidth * 0.04;
           const yPosition = targetHeight * 0.02;
 
           ctx.drawImage(watermark, xPosition, yPosition, watermarkWidth, watermarkHeight);
