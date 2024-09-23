@@ -16,7 +16,7 @@ export default function App() {
     if (nameParam) {
       setName(decodeURIComponent(nameParam));
     }
-  }, [searchParams]);
+  }, [searchParams]); 
 
   const handleDownload = () => {
     downloadImage(name);
@@ -105,14 +105,6 @@ export default function App() {
             <QRCodeSVG 
               value={imgurUrl} 
               size={240} 
-              imageSettings={{
-                src: "/image/logo-small.png",
-                x: undefined,
-                y: undefined,
-                height: 50,
-                width: 50,
-                excavate: true,
-              }}
             />
           </div>
         )}
