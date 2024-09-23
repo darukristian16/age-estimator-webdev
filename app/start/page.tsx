@@ -99,12 +99,22 @@ export default function App() {
               </CardFooter>
             </Card>
           )}
-          {isAgeEstimated && qrCodeUrl && (
+          {isAgeEstimated && (qrCodeUrl || '/images/fallback-image.jpg') && (
             <div className="absolute bottom-24 right-4 z-20">
-            <QRCodeSVG value={qrCodeUrl} size={100} />
-          </div>
-          )
-          }
+              <QRCodeSVG 
+                value={qrCodeUrl || '/images/fallback-image.jpg'}
+                size={100}
+                imageSettings={{
+                  src: "/image/logo-small.png",
+                  x: undefined,
+                  y: undefined,
+                  height: 24,
+                  width: 24,
+                  excavate: true,
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

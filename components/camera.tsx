@@ -40,28 +40,38 @@ export const useAgeEstimator = () => {
     const clientId = '0bb48e667fe9fb0';
     const base64Image = imageBase64.split(',')[1];
 
-    try {
-      const response = await axios.post('https://api.imgur.com/3/image', {
-        image: base64Image,
-        type: 'base64'
-      }, {
-        headers: {
-          'Authorization': `Client-ID ${clientId}`
-        }
-      });
+    const maxRetries = 3;
 
-      return response.data.data.link;
-    } catch (error) {
-      console.error('Error uploading to Imgur:', error);
-      return null;
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        const response = await axios.post('https://api.imgur.com/3/image', {
+          image: base64Image,
+          type: 'base64'
+        }, {
+          headers: {
+            'Authorization': `Client-ID ${clientId}`
+          }
+        });
+  
+        return response.data.data.link;
+      } catch (error) {
+        console.error(`Error uploading to Imgur (attempt ${i + 1}):`, error);
+        if (i === maxRetries - 1) return null;
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+      }
     }
+    return null;
   };
 
   const generateQRCode = async () => {
     if (image) {
       const imgurUrl = await uploadToImgur(image);
       if (imgurUrl) {
+        console.log('Imgur URL:', imgurUrl);
         setQrCodeUrl(imgurUrl);
+      } else {
+        console.error('Failed to get Imgur URL');
+        setQrCodeUrl('/images/fallback-image.jpg');
       }
     }
   };
@@ -75,7 +85,7 @@ export const useAgeEstimator = () => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             videoConstraints={videoConstraints}
-            className="absolute top-0 left-0 w-full h-full object-cover"
+            className="absolute top-0 left-0 w-full h-full object-cover transform scale-x-[-1]"
             onUserMediaError={(err) => console.error('Webcam error:', err)}
           />
           <div className="absolute top-4 left-4 opacity-80">
@@ -90,7 +100,7 @@ export const useAgeEstimator = () => {
     </div> 
   )
 
-  const capture = useCallback(() => {
+  const capture = useCallback(async () => {
     if (webcamRef.current && webcamRef.current.video) {
       const video = webcamRef.current.video;
       const aspectRatio = 9 / 16;
@@ -117,7 +127,7 @@ export const useAgeEstimator = () => {
 
         // Draw the watermark
         const watermark = new window.Image();
-        watermark.onload = () => {
+        watermark.onload = async() => {
           const watermarkWidth = targetWidth * 0.45;
           const watermarkHeight = (watermarkWidth / 3) * 1;
 
@@ -135,7 +145,7 @@ export const useAgeEstimator = () => {
         watermark.src = '/image/logo.png';
       }
     }
-  }, [webcamRef]);
+  }, [webcamRef, generateQRCode]);
 
   const downloadImage = useCallback((name: string) => {
   if (image && age !== null) {
@@ -213,6 +223,7 @@ export const useAgeEstimator = () => {
       const predictedAge = response.data.data[0]?.age; // Extract age from response
       setAge(predictedAge); // Set age state
       setIsAgeEstimated(true);
+      await generateQRCode();
     } catch (error) {
       console.error("Error estimating age", error);
     }
