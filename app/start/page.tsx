@@ -101,12 +101,20 @@ export default function App() {
           )}
         </div>
         {isAgeEstimated && imgurUrl && (
-          <div className="ml-4 w-64 h-64 bg-white p-4 rounded-lg shadow-lg">
+          <div className="ml-4 w-72 bg-gradient-to-br from-red-600 to-orange-500 p-6 rounded-xl shadow-lg flex flex-col items-center">
+          <div className="bg-white p-3 rounded-lg shadow-inner">
             <QRCodeSVG 
               value={imgurUrl} 
-              size={240} 
+              size={200} 
             />
           </div>
+          <p className="mt-4 text-center text-lg font-bold text-white">
+            Capture the Moment!
+          </p>
+          <p className="mt-2 text-center text-sm text-white">
+            Scan the QR code to download your age-estimated picture
+          </p>
+        </div>
         )}
       </div>
     </>

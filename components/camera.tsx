@@ -35,10 +35,47 @@ export const useAgeEstimator = () => {
   const [imgurUrl, setImgurUrl] = useState<string | null>(null);
 
   const[qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const dummyUrl = "https://example.com/dummy-image";
+
+  const addAgeToImage = (imageBase64: string, age: number) => {
+    return new Promise<string>((resolve) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          
+          ctx.font = 'bold 30px Arial';
+          const text = `Umur Anda: ${age}`;
+          const textMetrics = ctx.measureText(text);
+          const textWidth = textMetrics.width;
+          const textHeight = 30;
+
+          const x = canvas.width / 2;
+          const y = canvas.height - 20;
+          
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(x - textWidth / 2 - 10, y - textHeight - 10, textWidth + 20, textHeight + 20);
+          
+          ctx.fillStyle = 'white';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(text, x, y);
+
+          resolve(canvas.toDataURL('image/jpeg'));
+        }
+      };
+      img.src = imageBase64;
+    });
+  };
 
   const uploadToImgur = async (imageBase64: string) => {
     const clientId = '0bb48e667fe9fb0';
-    const base64Image = imageBase64.split(',')[1];
+    const imageWithAge = await addAgeToImage(imageBase64, age!);
+    const base64Image = imageWithAge.split(',')[1];
 
     try {
       const response = await axios.post('https://api.imgur.com/3/image', {
@@ -60,7 +97,7 @@ export const useAgeEstimator = () => {
   };
 
   const generateQRCode = async () => {
-    if (image) {
+    if (image && age !== null) {
       const uploadedUrl = await uploadToImgur(image);
       if (uploadedUrl) {
         console.log('Imgur URL:', uploadedUrl);
@@ -240,8 +277,8 @@ export const useAgeEstimator = () => {
     predictAge,
     CameraWithWatermark,
     downloadImage,
-    qrCodeUrl,
-    imgurUrl,
+    qrCodeUrl: dummyUrl,
+    imgurUrl: dummyUrl,
     generateQRCode,
   };
 };
