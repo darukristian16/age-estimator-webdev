@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { QRCodeSVG } from "qrcode.react";
 
 export default function App() {
-  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage, qrCodeUrl, generateQRCode } = useAgeEstimator();
+  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage, qrCodeUrl } = useAgeEstimator();
   const searchParams = useSearchParams();
   const [name, setName] = useState("");
 
@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] p-4">
+      <div className="flex flex-row items-center justify-center min-h-[calc(100vh-150px)] p-4">
         <div className="relative w-full max-w-[50vh] aspect-[9/16]">
           {isCaptured && (
             <div className="absolute top-4 right-4 z-20">
@@ -99,23 +99,23 @@ export default function App() {
               </CardFooter>
             </Card>
           )}
-          {isAgeEstimated && (qrCodeUrl || '/images/fallback-image.jpg') && (
-            <div className="absolute bottom-24 right-4 z-20">
-              <QRCodeSVG 
-                value={qrCodeUrl || '/images/fallback-image.jpg'}
-                size={100}
-                imageSettings={{
-                  src: "/image/logo-small.png",
-                  x: undefined,
-                  y: undefined,
-                  height: 24,
-                  width: 24,
-                  excavate: true,
-                }}
-              />
-            </div>
-          )}
         </div>
+        {isAgeEstimated && qrCodeUrl && (
+          <div className="ml-4 w-64 h-64 bg-white p-4 rounded-lg shadow-lg">
+            <QRCodeSVG 
+              value={qrCodeUrl} 
+              size={240} 
+              imageSettings={{
+                src: "/image/logo-small.png",
+                x: undefined,
+                y: undefined,
+                height: 24,
+                width: 24,
+                excavate: true,
+              }}
+            />
+          </div>
+        )}
       </div>
     </>
   );

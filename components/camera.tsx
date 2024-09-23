@@ -2,11 +2,10 @@ import { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Image from "next/image";
-import { QRCodeSVG } from "qrcode.react";
 
 export const videoConstraints = {
-  width: { ideal: 900 },
-  height: { ideal:1600 },
+  width: { ideal: 1080 },
+  height: { ideal:1920 },
   aspectRatio: 9/16,
   facingMode: "user",
 };
@@ -40,27 +39,21 @@ export const useAgeEstimator = () => {
     const clientId = '0bb48e667fe9fb0';
     const base64Image = imageBase64.split(',')[1];
 
-    const maxRetries = 3;
+    try {
+      const response = await axios.post('https://api.imgur.com/3/image', {
+        image: base64Image,
+        type: 'base64'
+      }, {
+        headers: {
+          'Authorization': `Client-ID ${clientId}`
+        }
+      });
 
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        const response = await axios.post('https://api.imgur.com/3/image', {
-          image: base64Image,
-          type: 'base64'
-        }, {
-          headers: {
-            'Authorization': `Client-ID ${clientId}`
-          }
-        });
-  
-        return response.data.data.link;
-      } catch (error) {
-        console.error(`Error uploading to Imgur (attempt ${i + 1}):`, error);
-        if (i === maxRetries - 1) return null;
-        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-      }
+      return response.data.data.link;
+    } catch (error) {
+      console.error('Error uploading to Imgur:', error);
+      return null;
     }
-    return null;
   };
 
   const generateQRCode = async () => {
@@ -125,6 +118,11 @@ export const useAgeEstimator = () => {
         const sy = (video.videoHeight - targetHeight) / 2;
         ctx.drawImage(video, sx, sy, targetWidth, targetHeight, 0, 0, targetWidth, targetHeight);
 
+        // Flip the image horizontally
+        ctx.scale(-1, 1);
+        ctx.drawImage(canvas, -targetWidth, 0, targetWidth, targetHeight);
+        ctx.scale(-1, 1); // Reset the scale
+
         // Draw the watermark
         const watermark = new window.Image();
         watermark.onload = async() => {
@@ -150,7 +148,6 @@ export const useAgeEstimator = () => {
   const downloadImage = useCallback((name: string) => {
   if (image && age !== null) {
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
     const img = new window.Image();
     img.onload = () => {
       canvas.width = img.width;
