@@ -109,8 +109,8 @@ export default function App() {
                 src: "/image/logo-small.png",
                 x: undefined,
                 y: undefined,
-                height: 24,
-                width: 24,
+                height: 50,
+                width: 50,
                 excavate: true,
               }}
             />
