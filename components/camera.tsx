@@ -35,7 +35,7 @@ export const useAgeEstimator = () => {
   const [imgurUrl, setImgurUrl] = useState<string | null>(null);
 
   const[qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-  const dummyUrl = "https://example.com/dummy-image";
+  // const dummyUrl = "https://example.com/dummy-image";
 
   const addAgeToImage = (imageBase64: string, age: number) => {
     return new Promise<string>((resolve) => {
@@ -277,8 +277,8 @@ export const useAgeEstimator = () => {
     predictAge,
     CameraWithWatermark,
     downloadImage,
-    qrCodeUrl: dummyUrl,
-    imgurUrl: dummyUrl,
+    qrCodeUrl,
+    imgurUrl,
     generateQRCode,
   };
 };
