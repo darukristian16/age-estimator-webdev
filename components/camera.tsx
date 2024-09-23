@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
 import Image from "next/image";
+import { QRCodeSVG } from "qrcode.react";
 
 export const videoConstraints = {
   width: { ideal: 900 },
@@ -32,6 +33,39 @@ export const useAgeEstimator = () => {
   const [age, setAge] = useState<number | null>(null);
   const [isCaptured, setIsCaptured] = useState(false);
   const [isAgeEstimated, setIsAgeEstimated] = useState(false);
+
+  const[qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+
+  const uploadToImgur = async (imageBase64: string) => {
+    const clientId = '0bb48e667fe9fb0';
+    const base64Image = imageBase64.split(',')[1];
+
+    try {
+      const response = await axios.post('https://api.imgur.com/3/image', {
+        image: base64Image,
+        type: 'base64'
+      }, {
+        headers: {
+          'Authorization': `Client-ID ${clientId}`
+        }
+      });
+
+      return response.data.data.link;
+    } catch (error) {
+      console.error('Error uploading to Imgur:', error);
+      return null;
+    }
+  };
+
+  const generateQRCode = async () => {
+    if (image) {
+      const imgurUrl = await uploadToImgur(image);
+      if (imgurUrl) {
+        setQrCodeUrl(imgurUrl);
+      }
+    }
+  };
+
 
   // Capture image from the webcam
   const CameraWithWatermark = () => (
@@ -96,6 +130,7 @@ export const useAgeEstimator = () => {
           setImage(imageSrc);
           setIsCaptured(true);
           setIsAgeEstimated(false);
+          await generateQRCode();
         };
         watermark.src = '/image/logo.png';
       }
@@ -194,5 +229,7 @@ export const useAgeEstimator = () => {
     predictAge,
     CameraWithWatermark,
     downloadImage,
+    qrCodeUrl,
+    generateQRCode,
   };
 };

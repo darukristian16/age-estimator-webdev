@@ -4,9 +4,10 @@ import {Card, CardFooter, Button} from "@nextui-org/react";
 import {useAgeEstimator} from "@/components/camera"
 import Image from "next/image";
 import { useSearchParams } from 'next/navigation';
+import { QRCodeSVG } from "qrcode.react";
 
 export default function App() {
-  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage } = useAgeEstimator();
+  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage, qrCodeUrl, generateQRCode } = useAgeEstimator();
   const searchParams = useSearchParams();
   const [name, setName] = useState("");
 
@@ -98,6 +99,12 @@ export default function App() {
               </CardFooter>
             </Card>
           )}
+          {isAgeEstimated && qrCodeUrl && (
+            <div className="absolute bottom-24 right-4 z-20">
+            <QRCodeSVG value={qrCodeUrl} size={100} />
+          </div>
+          )
+          }
         </div>
       </div>
     </>
