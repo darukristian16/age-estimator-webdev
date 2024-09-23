@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { QRCodeSVG } from "qrcode.react";
 
 export default function App() {
-  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage, qrCodeUrl } = useAgeEstimator();
+  const { image, age, isCaptured, isAgeEstimated, capture, retryCapture, predictAge, CameraWithWatermark, downloadImage, imgurUrl } = useAgeEstimator();
   const searchParams = useSearchParams();
   const [name, setName] = useState("");
 
@@ -100,10 +100,10 @@ export default function App() {
             </Card>
           )}
         </div>
-        {isAgeEstimated && qrCodeUrl && (
+        {isAgeEstimated && imgurUrl && (
           <div className="ml-4 w-64 h-64 bg-white p-4 rounded-lg shadow-lg">
             <QRCodeSVG 
-              value={qrCodeUrl} 
+              value={imgurUrl} 
               size={240} 
               imageSettings={{
                 src: "/image/logo-small.png",

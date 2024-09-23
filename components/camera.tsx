@@ -32,6 +32,7 @@ export const useAgeEstimator = () => {
   const [age, setAge] = useState<number | null>(null);
   const [isCaptured, setIsCaptured] = useState(false);
   const [isAgeEstimated, setIsAgeEstimated] = useState(false);
+  const [imgurUrl, setImgurUrl] = useState<string | null>(null);
 
   const[qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
@@ -48,8 +49,10 @@ export const useAgeEstimator = () => {
           'Authorization': `Client-ID ${clientId}`
         }
       });
-
-      return response.data.data.link;
+      if (response.data.data.link) {
+        setImgurUrl(response.data.data.link);
+        return response.data.data.link;
+      }
     } catch (error) {
       console.error('Error uploading to Imgur:', error);
       return null;
@@ -58,13 +61,13 @@ export const useAgeEstimator = () => {
 
   const generateQRCode = async () => {
     if (image) {
-      const imgurUrl = await uploadToImgur(image);
-      if (imgurUrl) {
-        console.log('Imgur URL:', imgurUrl);
-        setQrCodeUrl(imgurUrl);
+      const uploadedUrl = await uploadToImgur(image);
+      if (uploadedUrl) {
+        console.log('Imgur URL:', uploadedUrl);
+        setQrCodeUrl(uploadedUrl);
       } else {
         console.error('Failed to get Imgur URL');
-        setQrCodeUrl('/images/fallback-image.jpg');
+        setQrCodeUrl(null);
       }
     }
   };
@@ -238,6 +241,7 @@ export const useAgeEstimator = () => {
     CameraWithWatermark,
     downloadImage,
     qrCodeUrl,
+    imgurUrl,
     generateQRCode,
   };
 };
