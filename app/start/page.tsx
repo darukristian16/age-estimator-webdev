@@ -24,7 +24,7 @@ export default function App() {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-center min-h-[calc(100vh-150px)] p-4">
+      <div className="flex flex-wrap items-center justify-center min-h-[calc(100vh-150px)] p-4 gap-8">
         <div className="relative w-full max-w-[50vh] aspect-[9/16]">
           {!isCaptured ? (
             <Card className='absolute top-0 left-0 w-full h-full bg-cover'>
