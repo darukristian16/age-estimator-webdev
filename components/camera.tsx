@@ -33,6 +33,7 @@ export const useAgeEstimator = () => {
   const [isCaptured, setIsCaptured] = useState(false);
   const [isAgeEstimated, setIsAgeEstimated] = useState(false);
   const [imgurUrl, setImgurUrl] = useState<string | null>(null);
+  const [downloadableImage, setDownloadableImage] = useState<string | null>(null);
 
   const[qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   // const dummyUrl = "https://example.com/dummy-image";
@@ -87,10 +88,18 @@ export const useAgeEstimator = () => {
           />
           <div className="absolute top-4 left-4 opacity-80">
             <Image
-              src="/image/logo.png"
+              src="/assets/logo-reverse.png"
               alt="Watermark"
-              width={200}
-              height={100}
+              width={160}
+              height={80}
+            />
+          </div>
+          <div className="absolute top-4 right-4 opacity-80">
+            <Image
+              src="/assets/fordigi-reverse.png"
+              alt="Watermark"
+              width={120}
+              height={60}
             />
           </div>
       </div>
@@ -114,6 +123,7 @@ export const useAgeEstimator = () => {
       const canvas = document.createElement('canvas');
       canvas.width = targetWidth;
       canvas.height = targetHeight;
+
       const ctx = canvas.getContext('2d');
 
       if (ctx) {
@@ -127,70 +137,39 @@ export const useAgeEstimator = () => {
         ctx.drawImage(canvas, -targetWidth, 0, targetWidth, targetHeight);
         ctx.scale(-1, 1); // Reset the scale
 
-        // Draw the watermark
-        const watermark = new window.Image();
-        watermark.onload = async() => {
-          const watermarkWidth = targetWidth * 0.45;
-          const watermarkHeight = (watermarkWidth / 3) * 1;
-
-          const xPosition = targetWidth * 0.04;
-          const yPosition = targetHeight * 0.02;
-
-          ctx.drawImage(watermark, xPosition, yPosition, watermarkWidth, watermarkHeight);
+        // Draw watermarks
+        const logoWatermark = new window.Image();
+        const fordigiWatermark = new window.Image();
+        
+        logoWatermark.onload = () => {
+          ctx.drawImage(logoWatermark, 20, 20, 225, 75);
           
-          const imageSrc = canvas.toDataURL('image/jpeg');
-          setImage(imageSrc);
-          setIsCaptured(true);
-          setIsAgeEstimated(false);
-          await generateQRCode();
+          fordigiWatermark.onload = () => {
+            ctx.drawImage(fordigiWatermark, canvas.width - 180, 20, 150, 75);
+            
+            const imageSrc = canvas.toDataURL('image/jpeg');
+            setImage(imageSrc);
+            setIsCaptured(true);
+            setIsAgeEstimated(false);
+            generateQRCode();
+          };
+          fordigiWatermark.src = '/assets/fordigi-reverse.png';
         };
-        watermark.src = '/image/logo.png';
+        logoWatermark.src = '/assets/logo-reverse.png';
       }
     }
   }, [webcamRef, generateQRCode]);
 
   const downloadImage = useCallback((name: string) => {
-  if (image && age !== null) {
-    const canvas = document.createElement('canvas');
-    const img = new window.Image();
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
-        
-        // Add age text to the image
-        ctx.font = 'bold 30px Arial';
-        const text = `Umur Anda: ${age}`;
-        const textMetrics = ctx.measureText(text);
-        const textWidth = textMetrics.width;
-        const textHeight = 30; // Approximate height of the text
-
-        const x = canvas.width / 2;
-        const y = canvas.height - 20;
-        
-        // Add a semi-transparent background that fits the text
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(x - textWidth / 2 - 10, y - textHeight - 10, textWidth + 20, textHeight + 20);
-        
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillText(text, x, y);
-
-        // Create download link
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/jpeg');
-        link.download = `age-estimation-${name}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    };
-    img.src = image;
-  }
-}, [image, age]);
+    if (downloadableImage) {
+      const link = document.createElement('a');
+      link.href = downloadableImage;
+      link.download = `age-estimation-${name}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [downloadableImage]);
 
   const retryCapture = () => {
     setImage(null);
@@ -221,14 +200,54 @@ export const useAgeEstimator = () => {
 
       console.log(response); // Inspect the response
 
-      const predictedAge = response.data.data[0]?.age; // Extract age from response
-      setAge(predictedAge); // Set age state
+      const predictedAge = response.data.data[0]?.age;
+      setAge(predictedAge);
       setIsAgeEstimated(true);
-      await generateQRCode();
+
+      // Create a new canvas for the downloadable/uploadable image
+      const canvas = document.createElement('canvas');
+      const img = new window.Image();
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+
+          // Load the age-display.png
+          const ageDisplay = new window.Image();
+          ageDisplay.onload = () => {
+            // Calculate position for age display (bottom center)
+            const displayWidth = canvas.width * 0.6; // 60% of image width
+            const displayHeight = displayWidth * (ageDisplay.height / ageDisplay.width);
+            const x = (canvas.width - displayWidth) / 2;
+            const y = canvas.height - displayHeight - 20; // 20px from bottom
+
+            // Draw age display
+            ctx.drawImage(ageDisplay, x, y, displayWidth, displayHeight);
+
+            // Add age text
+            ctx.font = 'bold 30px Arial';
+            const text = `Umur Anda: ${predictedAge}`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, canvas.width / 2, canvas.height - displayHeight / 2 - 20);
+
+            const updatedImageSrc = canvas.toDataURL('image/jpeg');
+            uploadToImgur(updatedImageSrc);
+            setDownloadableImage(updatedImageSrc);
+          };
+          ageDisplay.src = '/assets/age-display.png';
+        }
+      };
+      img.src = image;
     } catch (error) {
       console.error("Error estimating age", error);
     }
   };
+
+
 
   return {
     webcamRef,
